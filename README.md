@@ -4,6 +4,9 @@ A simple web application that allows you to quickly view and edit text from your
 
 I built this tool for my personal Japanese study. It helps me quickly select words from my clipboard and open a pop-up dictionary Chrome extension (e.g., Yomichan).
 
+## Usage
+The application is hosted at: https://erzloh.github.io/text-hooker/
+
 ## Features
 
 *   **Clipboard Access:** Automatically reads and displays the content of your clipboard when you visit the page.
