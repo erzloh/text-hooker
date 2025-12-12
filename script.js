@@ -1,6 +1,7 @@
 let textDisplay = document.getElementById('text-display');
 const refreshBtn = document.getElementById('refresh-btn');
 const editBtn = document.getElementById('edit-btn');
+const deleteBtn = document.getElementById('delete-btn');
 const textContainer = document.getElementById('text-container');
 
 let isEditing = false;
@@ -10,7 +11,6 @@ async function getClipboardText() {
         textDisplay.textContent = 'Clipboard API not supported in this browser.';
         return;
     }
-
     try {
         const text = await navigator.clipboard.readText();
         textDisplay.textContent = text;
@@ -21,6 +21,15 @@ async function getClipboardText() {
 }
 
 refreshBtn.addEventListener('click', getClipboardText);
+
+deleteBtn.addEventListener('click', () => {
+    if (isEditing) {
+        const textArea = textContainer.querySelector('textarea');
+        textArea.value = '';
+    } else {
+        textDisplay.textContent = '';
+    }
+});
 
 editBtn.addEventListener('click', () => {
     isEditing = !isEditing;
