@@ -55,3 +55,10 @@ editBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('load', getClipboardText);
+
+function setHeight() {
+    document.documentElement.style.height = `${window.innerHeight}px`;
+}
+
+window.addEventListener('resize', setHeight);
+window.addEventListener('load', setHeight);
