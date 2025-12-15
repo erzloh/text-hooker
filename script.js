@@ -26,18 +26,52 @@ function addHistoryEntry(text) {
     updateHistoryButtons();
 }
 
+function autoResize(element) {
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + 'px';
+}
+
 async function getClipboardText() {
     if (!navigator.clipboard) {
-        textDisplay.textContent = 'Clipboard API not supported in this browser.';
+        const message = 'Clipboard API not supported in this browser.';
+        if (isEditing) {
+            const textArea = textContainer.querySelector('textarea');
+            if (textArea) {
+                textArea.value = message;
+                autoResize(textArea);
+                textArea.focus();
+            }
+        } else {
+            textDisplay.textContent = message;
+        }
         return;
     }
     try {
         const text = await navigator.clipboard.readText();
-        textDisplay.textContent = text;
         addHistoryEntry(text);
+        if (isEditing) {
+            const textArea = textContainer.querySelector('textarea');
+            if (textArea) {
+                textArea.value = text;
+                autoResize(textArea);
+                textArea.focus();
+            }
+        } else {
+            textDisplay.textContent = text;
+        }
     } catch (err) {
         console.error('Failed to read clipboard contents: ', err);
-        textDisplay.textContent = 'Failed to read clipboard. Please grant permission in your browser.';
+        const message = 'Failed to read clipboard. Please grant permission in your browser.';
+        if (isEditing) {
+            const textArea = textContainer.querySelector('textarea');
+            if (textArea) {
+                textArea.value = message;
+                autoResize(textArea);
+                textArea.focus();
+            }
+        } else {
+            textDisplay.textContent = message;
+        }
     }
 }
 
@@ -46,7 +80,11 @@ refreshBtn.addEventListener('click', getClipboardText);
 deleteBtn.addEventListener('click', () => {
     if (isEditing) {
         const textArea = textContainer.querySelector('textarea');
-        textArea.value = '';
+        if (textArea) {
+            textArea.value = '';
+            autoResize(textArea);
+            textArea.focus();
+        }
     } else {
         textDisplay.textContent = '';
     }
@@ -55,7 +93,17 @@ deleteBtn.addEventListener('click', () => {
 backwardBtn.addEventListener('click', () => {
     if (historyIndex > 0) {
         historyIndex--;
-        textDisplay.textContent = textHistory[historyIndex];
+        const newText = textHistory[historyIndex];
+        if (isEditing) {
+            const textArea = textContainer.querySelector('textarea');
+            if (textArea) {
+                textArea.value = newText;
+                autoResize(textArea);
+                textArea.focus();
+            }
+        } else {
+            textDisplay.textContent = newText;
+        }
         updateHistoryButtons();
     }
 });
@@ -63,7 +111,17 @@ backwardBtn.addEventListener('click', () => {
 forwardBtn.addEventListener('click', () => {
     if (historyIndex < textHistory.length - 1) {
         historyIndex++;
-        textDisplay.textContent = textHistory[historyIndex];
+        const newText = textHistory[historyIndex];
+        if (isEditing) {
+            const textArea = textContainer.querySelector('textarea');
+            if (textArea) {
+                textArea.value = newText;
+                autoResize(textArea);
+                textArea.focus();
+            }
+        } else {
+            textDisplay.textContent = newText;
+        }
         updateHistoryButtons();
     }
 });
@@ -82,15 +140,10 @@ editBtn.addEventListener('click', () => {
         textContainer.innerHTML = '';
         textContainer.appendChild(textArea);
 
-        const autoResize = () => {
-            textArea.style.height = 'auto';
-            textArea.style.height = textArea.scrollHeight + 'px';
-        };
-
-        textArea.addEventListener('input', autoResize);
+        textArea.addEventListener('input', () => autoResize(textArea));
 
         // Initial resize
-        autoResize();
+        autoResize(textArea);
 
         textArea.setAttribute('lang', 'ja');
         textArea.setAttribute('inputmode', 'text');
