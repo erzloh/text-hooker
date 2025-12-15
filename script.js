@@ -40,6 +40,9 @@ editBtn.addEventListener('click', () => {
         textArea.value = currentText;
         textContainer.innerHTML = '';
         textContainer.appendChild(textArea);
+        textArea.setAttribute('lang', 'ja');
+        textArea.setAttribute('inputmode', 'text');
+        textArea.focus();
         editBtn.textContent = 'Save';
     } else {
         const textArea = textContainer.querySelector('textarea');
