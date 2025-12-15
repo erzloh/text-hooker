@@ -23,6 +23,10 @@ function addHistoryEntry(text) {
     }
     textHistory.push(text);
     historyIndex = textHistory.length - 1;
+
+    localStorage.setItem('textHistory', JSON.stringify(textHistory));
+    localStorage.setItem('historyIndex', historyIndex);
+
     updateHistoryButtons();
 }
 
@@ -87,12 +91,14 @@ deleteBtn.addEventListener('click', () => {
         }
     } else {
         textDisplay.textContent = '';
+        addHistoryEntry('');
     }
 });
 
 backwardBtn.addEventListener('click', () => {
     if (historyIndex > 0) {
         historyIndex--;
+        localStorage.setItem('historyIndex', historyIndex);
         const newText = textHistory[historyIndex];
         if (isEditing) {
             const textArea = textContainer.querySelector('textarea');
@@ -111,6 +117,7 @@ backwardBtn.addEventListener('click', () => {
 forwardBtn.addEventListener('click', () => {
     if (historyIndex < textHistory.length - 1) {
         historyIndex++;
+        localStorage.setItem('historyIndex', historyIndex);
         const newText = textHistory[historyIndex];
         if (isEditing) {
             const textArea = textContainer.querySelector('textarea');
@@ -163,11 +170,31 @@ editBtn.addEventListener('click', () => {
     }
 });
 
-window.addEventListener('load', getClipboardText);
-
 function setHeight() {
     document.documentElement.style.height = `${window.innerHeight}px`;
 }
 
 window.addEventListener('resize', setHeight);
-window.addEventListener('load', setHeight);
+
+window.addEventListener('load', () => {
+    setHeight();
+
+    const storedHistory = localStorage.getItem('textHistory');
+    const storedIndex = localStorage.getItem('historyIndex');
+
+    if (storedHistory && storedIndex !== null) {
+        textHistory = JSON.parse(storedHistory);
+        historyIndex = parseInt(storedIndex, 10);
+
+        if (textHistory.length > 0 && historyIndex >= 0 && historyIndex < textHistory.length) {
+            textDisplay.textContent = textHistory[historyIndex];
+            updateHistoryButtons();
+        } else {
+            localStorage.removeItem('textHistory');
+            localStorage.removeItem('historyIndex');
+            getClipboardText();
+        }
+    } else {
+        getClipboardText();
+    }
+});
