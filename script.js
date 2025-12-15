@@ -78,8 +78,20 @@ editBtn.addEventListener('click', () => {
         const currentText = textDisplay.textContent;
         const textArea = document.createElement('textarea');
         textArea.value = currentText;
+
         textContainer.innerHTML = '';
         textContainer.appendChild(textArea);
+
+        const autoResize = () => {
+            textArea.style.height = 'auto';
+            textArea.style.height = textArea.scrollHeight + 'px';
+        };
+
+        textArea.addEventListener('input', autoResize);
+
+        // Initial resize
+        autoResize();
+
         textArea.setAttribute('lang', 'ja');
         textArea.setAttribute('inputmode', 'text');
         textArea.focus();
